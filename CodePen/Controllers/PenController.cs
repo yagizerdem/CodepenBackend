@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Entity;
 using Models.Exceptions;
 using Models.ResponseTypes;
 using Service;
+using Utils.ExtensionMethods;
 
 namespace CodePen.Controllers
 {
@@ -18,7 +20,7 @@ namespace CodePen.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUserEntity> _userManager;
         private readonly PenService _penService;
-
+        private int _maxPageSize = 30;  
         public PenController(
             ApplicationDbContext db,
             UserManager<ApplicationUserEntity> userManager,
@@ -93,6 +95,36 @@ namespace CodePen.Controllers
                 data: response,
                 message: "old version removed successfully",
                 statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpGet("get-pens")]
+        [Authorize]
+
+        public async Task<IActionResult> GetPens([FromQuery] string? Title,
+                [FromQuery] string? Description,
+                [FromQuery] string? AuthorUserName,
+                [FromQuery] int page = 1,
+                [FromQuery] int pageSize = 10)
+        {
+            pageSize = Math.Min(pageSize, _maxPageSize);
+            page = Math.Max(1, page);
+            var query = _db.Pens.AsQueryable();
+
+            query = query
+               .Include(x => x.Author)
+               .ApplySubstringMatch(a => a.Title, Title!)
+               .ApplySubstringMatch(a => a.Description!, Description!)
+               .ApplySubstringMatch(a => a.Author.UserName!, AuthorUserName!)
+               .ApplySorting(desc: true, a => a.CreatedAt)
+               .ApplyPagination(page, pageSize);
+
+
+            var pensFromDb = await query.ToListAsync();
+            return Ok(ApiResponse<List<PenEntity>>.SuccessResponse(
+                data:pensFromDb,
+                statusCode:System.Net.HttpStatusCode.OK,
+                message:"pens fetches successfully"));
+
         }
 
         // helpers

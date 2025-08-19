@@ -1,5 +1,6 @@
 
 using CodePen.Middleware;
+using CodePen.Seeder;
 using DataAccess;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -113,6 +114,10 @@ namespace CodePen
             builder.Services.AddAutoMapper(c => { }, typeof(MappingProfile).Assembly);
 
             var app = builder.Build();
+
+            // seeders
+            PenSeeder.Seed(builder.Services.BuildServiceProvider());
+            ApplicationUserSeeder.Seed(builder.Services.BuildServiceProvider());
 
             // handle all unhandled exceptions globally
             app.UseMiddleware<GlobalExceptionMiddleware>();

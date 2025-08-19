@@ -20,9 +20,6 @@ namespace Models.Entity
 
         public string FullName => $"{FirstName} {LastName}";
 
-        [Required]
-        public required string Role { get; set; }
-
 
         // base entity properties 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
