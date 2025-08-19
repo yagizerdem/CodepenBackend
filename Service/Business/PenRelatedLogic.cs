@@ -1,5 +1,6 @@
 ﻿using DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Models.Entity;
 using Models.Exceptions;
 using System;
@@ -108,6 +109,54 @@ namespace Service.Business
                     machineCode: ServiceErrorCodes.NotAllowed);
             return oldVersionFromDb;
         }
+
+
+        public async Task EnsureUserNotLikedPen(int penId, ApplicationUserEntity user)
+        {
+            var isLiked = await _db.PenLikes.AnyAsync(
+                pl => pl.PenId == penId && 
+                pl.UserId == user.Id && 
+                pl.Status == Models.Enums.EntityStatus.Active);
+            
+            if (isLiked)
+                throw new ServiceException(
+                    message: $"Already liked",
+                    errors: ["You have already liked this pen"],
+                    isOperational: true,
+                    machineCode: ServiceErrorCodes.PenAlreadyLiked);
+        }
+    
+        public async Task<PenLikeEntity> EnsureUserLikedPen(int penId, ApplicationUserEntity user)
+        {
+            var penLike = await _db.PenLikes.FirstOrDefaultAsync(
+                pl => pl.PenId == penId && 
+                pl.UserId == user.Id && 
+                pl.Status == Models.Enums.EntityStatus.Active);
+            
+            if (penLike == null)
+                throw new ServiceException(
+                    message: $"Not liked",
+                    errors: ["You have not liked this pen"],
+                    isOperational: true,
+                    machineCode: ServiceErrorCodes.PenNotLiked);
+        
+            return penLike;
+        }
+
+        public async Task<PenLikeEntity> EnsureOwnerShipOfLike(int penId, ApplicationUserEntity user)
+        {
+            var penLikeFromDb = await EnsureUserLikedPen(penId, user);
+        
+            if(penLikeFromDb.UserId != user.Id)
+                throw new ServiceException(
+                    message: $"Not allowed",
+                    errors: ["You are not allowed to do this action"],
+                    isOperational: true,
+                    machineCode: ServiceErrorCodes.NotAllowed);
+
+            return penLikeFromDb;
+        }
+
 
     }
 }

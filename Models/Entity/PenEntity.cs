@@ -19,8 +19,8 @@ namespace Models.Entity
         public ApplicationUserEntity Author { get; set; } = null!;
         public int Version { get; set; } = 1;
     
-        public IEnumerable<OldPenVersionsEntity> OldVersions { get; set; } = new List<OldPenVersionsEntity>();  
+        public ICollection<OldPenVersionsEntity> OldVersions { get; set; } = new List<OldPenVersionsEntity>();  
  
-        public IEnumerable<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
+        public ICollection<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
     }
 }

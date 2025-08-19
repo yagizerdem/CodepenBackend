@@ -26,8 +26,8 @@ namespace Models.Entity
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public EntityStatus Status { get; set; } = EntityStatus.Active;
     
-        public IEnumerable<PenEntity> Pens { get; set; } = new List<PenEntity>();
+        public ICollection<PenEntity> Pens { get; set; } = new List<PenEntity>();
 
-        public IEnumerable<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
+        public ICollection<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
     }
 }

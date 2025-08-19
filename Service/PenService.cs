@@ -93,5 +93,39 @@ namespace Service
             return oldVersionFromDb;
         }
     
+        public async Task<PenLikeEntity> LikePen(int penId, ApplicationUserEntity user)
+        {
+            // dont allow same user multiple likes on a pen
+            await _penRelatedLogic.EnsureUserNotLikedPen(penId, user);
+
+            var penFromDb = await _penRelatedLogic.EnsureExistByIdAndActive(penId);
+            PenLikeEntity likeEntity = new PenLikeEntity
+            {
+                Pen = penFromDb,
+                PenId = penFromDb.Id,
+                User = user,
+                UserId = user.Id
+            };
+
+            penFromDb.Likes.Add(likeEntity);
+            await _db.PenLikes.AddAsync(likeEntity);
+            await _db.SaveChangesAsync();
+
+            return likeEntity;
+
+        }
+ 
+        public async Task<PenLikeEntity> UnlikePen(int penId, ApplicationUserEntity user)
+        {
+            var penFromDb = await _penRelatedLogic.EnsureExistByIdAndActive(penId);
+            var penlikeFromDb = await _penRelatedLogic.EnsureOwnerShipOfLike(penId, user);
+
+            penlikeFromDb.Status = Models.Enums.EntityStatus.Deleted;
+            _db.PenLikes.Update(penlikeFromDb);
+            await _db.SaveChangesAsync();
+            
+            return penlikeFromDb;
+        }
+
     }
 }

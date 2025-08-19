@@ -126,6 +126,32 @@ namespace CodePen.Controllers
 
         }
 
+        [HttpPost("like-pen/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> LikePen(int penId)
+        {
+            var user = await GetCurrentUserAsync();
+            var response = await _penService.LikePen(penId, user);
+         
+            return Ok(ApiResponse<PenLikeEntity>.SuccessResponse(
+                data: response,
+                message: "pen liked successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpPost("unlike-pen/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> UnlikePen(int penId)
+        {
+            var user = await GetCurrentUserAsync();
+            var response = await _penService.UnlikePen(penId, user);
+         
+            return Ok(ApiResponse<PenLikeEntity>.SuccessResponse(
+                data: response,
+                message: "pen unliked successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
         {

@@ -17,6 +17,10 @@ namespace Utils.ServiceErrorCodes
 
         public const string OldPenVersionNotFound = "OLD_PEN_VERSION_NOT_FOUND";
 
+        public const string PenAlreadyLiked = "PEN_ALREADY_LIKED";
+
+        public const string PenNotLiked = "PEN_NOT_LIKED";
+
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
@@ -25,6 +29,8 @@ namespace Utils.ServiceErrorCodes
                 PenNotFound => HttpStatusCode.NotFound,
                 NotAllowed => HttpStatusCode.Forbidden,
                 OldPenVersionNotFound => HttpStatusCode.NotFound,
+                PenAlreadyLiked => HttpStatusCode.Conflict,
+                PenNotLiked => HttpStatusCode.Conflict,
                 _ => HttpStatusCode.BadRequest
             };
         }

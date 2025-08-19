@@ -19,6 +19,8 @@ namespace DataAccess
 
         public DbSet<OldPenVersionsEntity> OldPenVersions { get; set; }
 
+        public DbSet<PenLikeEntity> PenLikes { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
