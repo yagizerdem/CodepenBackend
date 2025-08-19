@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Entity;
 using Models.ResponseTypes;
+using Service;
 using System.Net;
 
 namespace CodePen
@@ -101,6 +102,7 @@ namespace CodePen
             });
 
 
+            builder.Services.AddScoped<ApplicationUserService>();
 
 
             var app = builder.Build();
