@@ -23,6 +23,7 @@ namespace Models.Exceptions
         {
             IsOperational = isOperational;
             Errors = errors ?? new List<string>();
+            MachineCode = machineCode;
         }
     }
 }

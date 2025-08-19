@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Models.Exceptions;
 using Models.ResponseTypes;
+using Utils.ServiceErrorCodes;
 
 namespace CodePen.Middleware
 {
@@ -36,7 +37,10 @@ namespace CodePen.Middleware
                 // Known service-level error (business rule)
                 _logger.LogWarning(ex, "Service exception: {Message}", ex.Message);
                 if (ex.IsOperational)
-                    await WriteErrorResponse(context, ex.Message, ex.Errors, HttpStatusCode.BadRequest);
+                {
+                    HttpStatusCode statusCode = ServiceErrorCodes.MapToStatusCode(ex.MachineCode);
+                    await WriteErrorResponse(context, ex.Message, ex.Errors, statusCode);
+                }
                 else
                     await WriteErrorResponse(context, "Internal Server Error", [], HttpStatusCode.InternalServerError);
             }

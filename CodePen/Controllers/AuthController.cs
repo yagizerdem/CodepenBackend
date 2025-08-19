@@ -55,6 +55,7 @@ namespace CodePen.Controllers
                 message: "user login successfully",
                 statusCode: System.Net.HttpStatusCode.OK));
         }
+
         [HttpPost("logout")]
         [AllowAnonymous]
         public async Task<IActionResult> LogOut()
