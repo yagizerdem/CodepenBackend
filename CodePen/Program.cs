@@ -1,6 +1,8 @@
 
 using CodePen.Middleware;
+using DataAccess;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.ResponseTypes;
 
 namespace CodePen
@@ -17,7 +19,9 @@ namespace CodePen
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
-
+            // database context injection
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 
