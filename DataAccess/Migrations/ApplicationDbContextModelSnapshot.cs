@@ -314,6 +314,38 @@ namespace DataAccess.Migrations
                     b.ToTable("Pens");
                 });
 
+            modelBuilder.Entity("Models.Entity.PenLikeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PenId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PenLikeEntity");
+                });
+
             modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -326,10 +358,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -406,15 +434,41 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
                 {
                     b.HasOne("Models.Entity.ApplicationUserEntity", "Author")
-                        .WithMany()
+                        .WithMany("Pens")
                         .HasForeignKey("AuthorId");
 
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("Models.Entity.PenLikeEntity", b =>
+                {
+                    b.HasOne("Models.Entity.PenEntity", "Pen")
+                        .WithMany("Likes")
+                        .HasForeignKey("PenId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Models.Entity.ApplicationUserEntity", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Pen");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
                 {
+                    b.Navigation("Likes");
+
                     b.Navigation("OldVersions");
+                });
+
+            modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
+                {
+                    b.Navigation("Likes");
+
+                    b.Navigation("Pens");
                 });
 #pragma warning restore 612, 618
         }

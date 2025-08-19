@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250819142100_mig4")]
-    partial class mig4
+    [Migration("20250819210331_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -268,7 +268,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("PenId");
 
-                    b.ToTable("OldPenVersionsEntity");
+                    b.ToTable("OldPenVersions");
                 });
 
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
@@ -280,7 +280,6 @@ namespace DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CSS")
@@ -315,7 +314,39 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("PenEntity");
+                    b.ToTable("Pens");
+                });
+
+            modelBuilder.Entity("Models.Entity.PenLikeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PenId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PenLikeEntity");
                 });
 
             modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
@@ -330,10 +361,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -410,17 +437,41 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
                 {
                     b.HasOne("Models.Entity.ApplicationUserEntity", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Pens")
+                        .HasForeignKey("AuthorId");
 
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("Models.Entity.PenLikeEntity", b =>
+                {
+                    b.HasOne("Models.Entity.PenEntity", "Pen")
+                        .WithMany("Likes")
+                        .HasForeignKey("PenId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Models.Entity.ApplicationUserEntity", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Pen");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
                 {
+                    b.Navigation("Likes");
+
                     b.Navigation("OldVersions");
+                });
+
+            modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
+                {
+                    b.Navigation("Likes");
+
+                    b.Navigation("Pens");
                 });
 #pragma warning restore 612, 618
         }

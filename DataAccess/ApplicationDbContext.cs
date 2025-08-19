@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Models.Entity;
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,27 @@ namespace DataAccess
             modelBuilder.Entity<OldPenVersionsEntity>()
                 .HasOne(v => v.Pen)
                 .WithMany(p => p.OldVersions)
-                .OnDelete(DeleteBehavior.SetNull);  
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<PenLikeEntity>()
+                .HasOne(v => v.Pen)
+                .WithMany(p => p.Likes)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
+            modelBuilder.Entity<PenLikeEntity>(entity =>
+            {
+                entity.HasOne(pl => pl.Pen)
+                      .WithMany(p => p.Likes)
+                      .HasForeignKey(pl => pl.PenId)
+                      .OnDelete(DeleteBehavior.SetNull);   
+
+                entity.HasOne(pl => pl.User)
+                      .WithMany(u => u.Likes)
+                      .HasForeignKey(pl => pl.UserId)
+                      .OnDelete(DeleteBehavior.SetNull);   
+            });
+
         }
 
 

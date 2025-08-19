@@ -116,8 +116,8 @@ namespace CodePen
             var app = builder.Build();
 
             // seeders
-            PenSeeder.Seed(builder.Services.BuildServiceProvider());
             ApplicationUserSeeder.Seed(builder.Services.BuildServiceProvider());
+            PenSeeder.Seed(builder.Services.BuildServiceProvider());
 
             // handle all unhandled exceptions globally
             app.UseMiddleware<GlobalExceptionMiddleware>();

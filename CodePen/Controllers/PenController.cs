@@ -99,7 +99,6 @@ namespace CodePen.Controllers
 
         [HttpGet("get-pens")]
         [Authorize]
-
         public async Task<IActionResult> GetPens([FromQuery] string? Title,
                 [FromQuery] string? Description,
                 [FromQuery] string? AuthorUserName,
