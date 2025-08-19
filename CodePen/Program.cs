@@ -104,6 +104,8 @@ namespace CodePen
 
             builder.Services.AddScoped<ApplicationUserService>();
 
+            // Register AutoMapper with all profiles in the assembly
+            builder.Services.AddAutoMapper(c => { }, typeof(MappingProfile).Assembly);
 
             var app = builder.Build();
 
