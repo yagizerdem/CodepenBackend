@@ -1,5 +1,7 @@
 
 using CodePen.Middleware;
+using Microsoft.AspNetCore.Mvc;
+using Models.ResponseTypes;
 
 namespace CodePen
 {
@@ -14,6 +16,33 @@ namespace CodePen
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+
+
+
+
+            // customize error messages
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .SelectMany(kvp => kvp.Value.Errors
+                            .Select(e => $"{kvp.Key}: {e.ErrorMessage}"))
+                        .ToList();
+
+                    var response = ApiResponse<object?>.ErrorResponse(
+                        message: "Validation failed.",
+                        statusCode: System.Net.HttpStatusCode.BadRequest,
+                        errors: errors
+                    );
+
+                    return new BadRequestObjectResult(response);
+                };
+            });
+
+
 
             var app = builder.Build();
 
