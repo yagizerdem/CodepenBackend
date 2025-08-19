@@ -2,7 +2,7 @@
 using Models.Exceptions;
 using System.Net;
 
-namespace CodePen.ExtensionMethods
+namespace Utils.ExtensionMethods
 {
     public static class SignInResultExtensions
     {

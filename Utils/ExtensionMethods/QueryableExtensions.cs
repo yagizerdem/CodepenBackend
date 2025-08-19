@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace CodePen.ExtensionMethods
+namespace Utils.ExtensionMethods
 {
     public static class QueryableExtensions
     {
