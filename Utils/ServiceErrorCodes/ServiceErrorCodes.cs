@@ -11,13 +11,20 @@ namespace Utils.ServiceErrorCodes
     {
         public const string UserNotFound = "USER_NOT_FOUND";
         
+        public const string PenNotFound = "PEN_NOT_FOUND";  
 
+        public const string NotAllowed = "NOT_ALLOWED";
+
+        public const string OldPenVersionNotFound = "OLD_PEN_VERSION_NOT_FOUND";
 
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
             {
                 UserNotFound => HttpStatusCode.NotFound,
+                PenNotFound => HttpStatusCode.NotFound,
+                NotAllowed => HttpStatusCode.Forbidden,
+                OldPenVersionNotFound => HttpStatusCode.NotFound,
                 _ => HttpStatusCode.BadRequest
             };
         }

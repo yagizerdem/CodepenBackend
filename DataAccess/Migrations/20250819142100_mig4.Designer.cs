@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819142100_mig4")]
+    partial class mig4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,7 +268,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("PenId");
 
-                    b.ToTable("OldPenVersions");
+                    b.ToTable("OldPenVersionsEntity");
                 });
 
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
@@ -277,6 +280,7 @@ namespace DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AuthorId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CSS")
@@ -311,7 +315,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Pens");
+                    b.ToTable("PenEntity");
                 });
 
             modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
@@ -407,7 +411,9 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Models.Entity.ApplicationUserEntity", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Author");
                 });

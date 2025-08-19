@@ -1,0 +1,126 @@
+﻿using DataAccess;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
+using Models.Entity;
+using Models.Exceptions;
+using Models.ResponseTypes;
+using Service;
+
+namespace CodePen.Controllers
+{
+
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PenController : ControllerBase
+    {
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUserEntity> _userManager;
+        private readonly PenService _penService;
+
+        public PenController(
+            ApplicationDbContext db,
+            UserManager<ApplicationUserEntity> userManager,
+            PenService penService)
+        {
+            _db = db;
+            _userManager = userManager;
+            _penService = penService;
+        }
+
+        [HttpPost("create")]
+        [Authorize]
+        public async Task<IActionResult> CreatePen([FromBody] CreatePenDTO dto)
+        {
+            var user = await GetCurrentUserAsync();
+            var response = await _penService.CreatePen(dto, user);
+
+            return Ok(ApiResponse<PenEntity>.SuccessResponse(
+                data: response,
+                message: "pen created successfully",
+                statusCode: System.Net.HttpStatusCode.Created));
+        }
+
+        [HttpPost("remove/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> RemovePen(int penId)
+        {
+            var user = await GetCurrentUserAsync();
+            var response = await _penService.SoftDelete(penId, user);
+
+            return Ok(ApiResponse<PenEntity>.SuccessResponse(
+                data: response,
+                message: "pen removed successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpPost("update/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePen(int penId, [FromBody] UpdatePenDTO dto)
+        {
+            var user = await GetCurrentUserAsync();
+            var penFromDb = await _penService.UpdatePen(penId, dto, user);
+
+            return Ok(ApiResponse<PenEntity>.SuccessResponse(
+                data: penFromDb,
+                message: "pen updated successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpPost("migrate-version/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> MigrateNewVersion(int penId)
+        {
+            var user = await GetCurrentUserAsync();
+            var oldVersionFromDb = await _penService.MigrateNewVersion(penId, user);
+
+            return Ok(ApiResponse<OldPenVersionsEntity>.SuccessResponse(
+                data: oldVersionFromDb,
+                message: "new version created",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpPost("remove-oldversion/{oldVersionId}")]
+        [Authorize] 
+
+        public async Task<IActionResult> RemoveOldVersion(int oldVersionId)
+        {
+            var user = await GetCurrentUserAsync();
+            var response = await _penService.SoftDeleteOldVersion(oldVersionId, user);
+         
+            return Ok(ApiResponse<OldPenVersionsEntity>.SuccessResponse(
+                data: response,
+                message: "old version removed successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        // helpers
+        public async Task<ApplicationUserEntity> GetCurrentUserAsync()
+        {
+            var userId = _userManager.GetUserId(User) ??
+                throw new AppException(
+                    message: "user not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound,
+                    isOperational: true,
+                    errors: ["user not found"]);
+
+            var user = await _userManager.FindByIdAsync(userId) ??
+                throw new AppException(
+                    message: "user not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound,
+                    isOperational: true,
+                    errors: ["user not found"]);
+            
+            if(user.Status == Models.Enums.EntityStatus.Deleted)
+                throw new AppException(
+                    message: "user not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound,
+                    isOperational: true,
+                    errors: ["user not found"]);
+
+            return user;
+        }
+
+    }
+}
