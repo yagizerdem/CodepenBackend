@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Models.Entity;
 using Models.ResponseTypes;
 using Service;
+using Service.Business;
 using System.Net;
 
 namespace CodePen
@@ -103,6 +104,8 @@ namespace CodePen
 
 
             builder.Services.AddScoped<ApplicationUserService>();
+            builder.Services.AddScoped<ApplicationUserRelatedLogic>();  
+
 
             // Register AutoMapper with all profiles in the assembly
             builder.Services.AddAutoMapper(c => { }, typeof(MappingProfile).Assembly);

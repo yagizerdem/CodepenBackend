@@ -17,14 +17,17 @@ namespace CodePen.Controllers
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUserEntity> _userManager;
         private  readonly ApplicationUserService _applicationUserService;
+        private readonly SignInManager<ApplicationUserEntity> _signInManager;
         public AuthController(
             ApplicationDbContext db,
             UserManager<ApplicationUserEntity> userManager,
-            ApplicationUserService applicationUserService)
+            ApplicationUserService applicationUserService,
+            SignInManager<ApplicationUserEntity> signInManager)
         {
             _db = db;
             _userManager = userManager;
-            _applicationUserService = applicationUserService;   
+            _applicationUserService = applicationUserService;
+            _signInManager = signInManager;
         }
 
 
@@ -38,8 +41,30 @@ namespace CodePen.Controllers
                 data: result,
                 message: "user created successfully",
                 statusCode: System.Net.HttpStatusCode.Created));
-        } 
+        }
 
+        [HttpPost("login")]
+        [AllowAnonymous]
 
+        public async Task<IActionResult> LogIn([FromBody] LogInDTO dto)
+        {
+            var result = await _applicationUserService.LogIn(dto);
+
+            return Ok(ApiResponse<ApplicationUserEntity>.SuccessResponse(
+                data: result,
+                message: "user login successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+        [HttpPost("logout")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LogOut()
+        {
+            await _signInManager.SignOutAsync();
+            
+            return Ok(ApiResponse<object?>.SuccessResponse(
+                data: null,
+                message: "user logout successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
     }
 }
