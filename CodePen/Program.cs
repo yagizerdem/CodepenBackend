@@ -1,4 +1,6 @@
 
+using CodePen.Middleware;
+
 namespace CodePen
 {
     public class Program
@@ -14,6 +16,10 @@ namespace CodePen
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
+
+            // handle all unhandled exceptions globally
+            app.UseMiddleware<GlobalExceptionMiddleware>();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
