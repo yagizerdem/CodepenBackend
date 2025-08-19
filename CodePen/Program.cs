@@ -1,8 +1,11 @@
 
 using CodePen.Middleware;
 using DataAccess;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models.Entity;
 using Models.ResponseTypes;
 
 namespace CodePen
@@ -21,8 +24,31 @@ namespace CodePen
 
             // database context injection
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // configure app user and role
+            builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
 
             // customize error messages
@@ -45,6 +71,34 @@ namespace CodePen
                     return new BadRequestObjectResult(response);
                 };
             });
+
+            // cookie configuration
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+                        var response = System.Text.Json.JsonSerializer.Serialize(
+                            ApiResponse<object?>.ErrorResponse(message: string.Empty, errors: ["Authentication required. Please log in."], statusCode: HttpStatusCode.Unauthorized)
+                        );
+                        return context.Response.WriteAsync(response);
+                    },
+                    OnRedirectToAccessDenied = context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+                        var response = System.Text.Json.JsonSerializer.Serialize(
+                            ApiResponse<object?>.ErrorResponse(message: string.Empty, errors: ["Access denied: you dont have the required role."], statusCode: HttpStatusCode.Forbidden)
+                        );
+                        return context.Response.WriteAsync(response);
+                    }
+                };
+                options.ExpireTimeSpan = TimeSpan.FromDays(90);
+            });
+
 
 
 
