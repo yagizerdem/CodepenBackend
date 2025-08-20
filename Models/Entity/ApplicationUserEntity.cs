@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Models.Entity
@@ -20,7 +21,9 @@ namespace Models.Entity
 
         public string FullName => $"{FirstName} {LastName}";
 
+        public int? ProfilePictureId { get; set; }
 
+        [JsonIgnore]
         public MediaWrapper? ProfilePicture { get; set; }
 
         // base entity properties 

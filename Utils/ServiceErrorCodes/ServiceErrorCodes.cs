@@ -23,6 +23,8 @@ namespace Utils.ServiceErrorCodes
 
         public const string PenCommentNotFound = "PEN_COMMENT_NOT_FOUND";
 
+        public const string ProfilePictureNotFound = "PROFILE_PICTURE_NOT_FOUND";
+
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
@@ -31,6 +33,7 @@ namespace Utils.ServiceErrorCodes
                 PenNotFound => HttpStatusCode.NotFound,
                 NotAllowed => HttpStatusCode.Forbidden,
                 OldPenVersionNotFound => HttpStatusCode.NotFound,
+                ProfilePictureNotFound => HttpStatusCode.NotFound,
                 PenAlreadyLiked => HttpStatusCode.Conflict,
                 PenNotLiked => HttpStatusCode.Conflict,
                 PenCommentNotFound => HttpStatusCode.NotFound,
