@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819215345_mig3")]
+    partial class mig3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -471,13 +474,11 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Models.Entity.PenEntity", "Pen")
                         .WithMany("Comments")
-                        .HasForeignKey("PenId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PenId");
 
                     b.HasOne("Models.Entity.ApplicationUserEntity", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Pen");
 
@@ -521,8 +522,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Likes");
 
                     b.Navigation("Pens");

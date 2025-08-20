@@ -22,5 +22,8 @@ namespace Models.Entity
         public ICollection<OldPenVersionsEntity> OldVersions { get; set; } = new List<OldPenVersionsEntity>();  
  
         public ICollection<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
+
+        public ICollection<PenCommentEntity> Comments { get; set; } = new List<PenCommentEntity>();
+
     }
 }

@@ -29,5 +29,7 @@ namespace Models.Entity
         public ICollection<PenEntity> Pens { get; set; } = new List<PenEntity>();
 
         public ICollection<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
+ 
+        public ICollection<PenCommentEntity> Comments { get; set; } = new List<PenCommentEntity>();
     }
 }

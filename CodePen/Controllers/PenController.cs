@@ -152,6 +152,7 @@ namespace CodePen.Controllers
                 statusCode: System.Net.HttpStatusCode.OK));
         }
 
+
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
         {

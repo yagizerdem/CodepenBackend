@@ -21,6 +21,8 @@ namespace CodePen
             CreateMap<PenEntity, OldPenVersionsEntity>().
                 ForMember(dest => dest.Id, opt =>  opt.Ignore()); // identity insert is off by default in .net
 
+
+            CreateMap<CreatePenCommentDTO, PenCommentEntity>();
         }
     }
 }

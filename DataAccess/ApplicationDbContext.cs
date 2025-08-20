@@ -21,6 +21,8 @@ namespace DataAccess
 
         public DbSet<PenLikeEntity> PenLikes { get; set; }
 
+        public DbSet<PenCommentEntity> PenComments { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -52,6 +54,19 @@ namespace DataAccess
                       .WithMany(u => u.Likes)
                       .HasForeignKey(pl => pl.UserId)
                       .OnDelete(DeleteBehavior.SetNull);   
+            });
+
+            modelBuilder.Entity<PenCommentEntity>(entity =>
+            {
+                entity.HasOne(pc => pc.Pen)
+                      .WithMany(p => p.Comments)
+                      .HasForeignKey(pc => pc.PenId)
+                      .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(pc => pc.User)
+                      .WithMany(u => u.Comments)
+                      .HasForeignKey(pc => pc.UserId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
         }
