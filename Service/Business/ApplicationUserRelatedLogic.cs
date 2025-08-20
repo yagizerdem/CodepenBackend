@@ -40,5 +40,24 @@ namespace Service.Business
 
         }
 
+        public async Task<ApplicationUserEntity> EnsureUserExistAndActiveById(string userId)
+        {
+            var userFromDb = await _userManager.FindByIdAsync(userId)
+                ?? throw new ServiceException(
+                    message: "user not found",
+                    errors: [$"user not found with id {userId}"],
+                    isOperational: true,
+                    machineCode: ServiceErrorCodes.UserNotFound
+                    );
+            if (userFromDb.Status == EntityStatus.Deleted)
+                throw new ServiceException(
+                   message: "user not found",
+                   errors: [$"user not found with id {userId}"],
+                   isOperational: true,
+                   machineCode: ServiceErrorCodes.UserNotFound
+                   );
+            return userFromDb;
+        }
+
     }
 }

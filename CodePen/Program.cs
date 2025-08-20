@@ -110,6 +110,8 @@ namespace CodePen
             builder.Services.AddScoped<PenRelatedLogic>();
             builder.Services.AddScoped<PenCommentRelatedLogic>();
             builder.Services.AddScoped<PenCommentService>();    
+            builder.Services.AddScoped<RelationRelatedLogic>();
+            builder.Services.AddScoped<RelationService>();  
 
             // Register AutoMapper with all profiles in the assembly
             builder.Services.AddAutoMapper(c => { }, typeof(MappingProfile).Assembly);

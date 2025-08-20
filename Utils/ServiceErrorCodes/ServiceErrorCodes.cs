@@ -25,6 +25,9 @@ namespace Utils.ServiceErrorCodes
 
         public const string ProfilePictureNotFound = "PROFILE_PICTURE_NOT_FOUND";
 
+        public const string SelfFollowRequest = "SELF_FOLLOW_REQUEST";
+
+        public const string ActiveFollowRequest = "ACTIVE_FOLLOW_REQUEST";
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
@@ -37,6 +40,8 @@ namespace Utils.ServiceErrorCodes
                 PenAlreadyLiked => HttpStatusCode.Conflict,
                 PenNotLiked => HttpStatusCode.Conflict,
                 PenCommentNotFound => HttpStatusCode.NotFound,
+                SelfFollowRequest => HttpStatusCode.BadRequest,
+                ActiveFollowRequest => HttpStatusCode.BadRequest,
                 _ => HttpStatusCode.BadRequest
             };
         }
