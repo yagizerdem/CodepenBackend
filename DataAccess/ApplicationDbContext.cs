@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUserEntity>
     {
 
         public DbSet<ApplicationUserEntity> ApplicationUsers { get; set; }  

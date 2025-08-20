@@ -2,6 +2,7 @@
 using DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Entity;
@@ -112,6 +113,52 @@ namespace Service
             await _db.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<MediaWrapper?> GetProfileImage(string userId, ApplicationUserEntity user)
+        {
+            var flag = false; // indicates user can access image of profile 
+
+            // validate with business logic to determine if user can access the profile image
+            if (userId == user.Id)
+                flag = true;
+
+
+            // validation end 
+            if (!flag)
+                return null;
+
+            var userFromDb = await _db.ApplicationUsers
+                .FirstOrDefaultAsync(x => x.Id == user.Id &&
+                x.Status == Models.Enums.EntityStatus.Active)
+                ?? throw new ServiceException(
+                    message: "user not found",
+                    errors: ["user not found"],
+                    isOperational: true,
+                    machineCode: ServiceErrorCodes.UserNotFound
+                );
+
+            if(userFromDb.ProfilePictureId == null)
+                throw new ServiceException(
+                    message: "profile image not found",
+                    errors: ["profile image found"],
+                    isOperational: true,
+                    machineCode: ServiceErrorCodes.ProfilePictureNotFound
+                ); 
+
+
+            var mediaWrapperFromDb = _db.MediaWrapper.FirstOrDefault(x => x.Id == 
+            userFromDb.ProfilePictureId && 
+            x.Status == Models.Enums.EntityStatus.Active);
+
+            if (mediaWrapperFromDb == null
+                || mediaWrapperFromDb.Status == Models.Enums.EntityStatus.Deleted
+                || mediaWrapperFromDb.Data == null
+                || mediaWrapperFromDb.Size == 0
+                || mediaWrapperFromDb.Data.Length == 0) flag = false;
+
+
+            return mediaWrapperFromDb;
         }
 
         // helper 
