@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Models.DTO;
 using Models.Entity;
@@ -8,6 +10,7 @@ using Models.Exceptions;
 using Models.ResponseTypes;
 using Service;
 using Service.Business;
+using Utils.ExtensionMethods;
 
 namespace CodePen.Controllers
 {
@@ -17,13 +20,16 @@ namespace CodePen.Controllers
     {
 
         private readonly PenCommentService _penCommentService;
-        private readonly UserManager<ApplicationUserEntity> _userManager;   
+        private readonly UserManager<ApplicationUserEntity> _userManager;
+        private readonly ApplicationDbContext _db;
         public PenCommentController(
             PenCommentService penCommentService, 
-            UserManager<ApplicationUserEntity> userManager)
+            UserManager<ApplicationUserEntity> userManager,
+            ApplicationDbContext db)
         {
             _penCommentService = penCommentService;
             _userManager = userManager;
+            _db = db;
         }
 
         [HttpPost("create")]
@@ -52,6 +58,34 @@ namespace CodePen.Controllers
                 message: "Pen comment soft deleted"));
         }
 
+        [HttpGet("get-comments")]
+        [Authorize]
+        public async Task<IActionResult> GetPenComments(
+            [FromQuery] string? userId,
+            [FromQuery] string? content,
+            [FromQuery] int penId, 
+            [FromQuery] int page = 1, 
+            [FromQuery] int pageSize = 10)
+        {
+            pageSize = Math.Min(pageSize, 50); // restrict to maximum 50 items per page
+            var user = await GetCurrentUserAsync();
+
+            var query = _db.PenComments.AsQueryable();
+            query = query
+                .ApplyExactMatch(x => x.User.Id, userId)
+                .ApplyExactMatch(x => x.PenId.ToString(), penId.ToString())
+                .ApplySubstringMatch(x => x.Content, content)
+                .ApplySorting(desc: true, a => a.CreatedAt)
+                .ApplyPagination(page, pageSize);
+
+
+            List<PenCommentEntity> comments = await query.ToListAsync(); 
+
+            return Ok(ApiResponse<List<PenCommentEntity>>.SuccessResponse(
+                data: comments,
+                statusCode: System.Net.HttpStatusCode.OK,
+                message: "Pen comments retrieved"));
+        }
 
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
