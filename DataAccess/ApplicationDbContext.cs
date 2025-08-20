@@ -23,6 +23,7 @@ namespace DataAccess
 
         public DbSet<PenCommentEntity> PenComments { get; set; }
 
+        public DbSet<MediaWrapper> MediaWrapper { get; set; } 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

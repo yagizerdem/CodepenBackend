@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250820125413_mig5")]
+    partial class mig5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -431,16 +434,11 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProfilePictureId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.HasIndex("ProfilePictureId");
 
                     b.HasDiscriminator().HasValue("ApplicationUserEntity");
                 });
@@ -547,15 +545,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Pen");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Models.Entity.ApplicationUserEntity", b =>
-                {
-                    b.HasOne("Models.Entity.MediaWrapper", "ProfilePicture")
-                        .WithMany()
-                        .HasForeignKey("ProfilePictureId");
-
-                    b.Navigation("ProfilePicture");
                 });
 
             modelBuilder.Entity("Models.Entity.PenEntity", b =>
