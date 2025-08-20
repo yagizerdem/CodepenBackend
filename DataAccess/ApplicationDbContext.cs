@@ -14,16 +14,13 @@ namespace DataAccess
     {
 
         public DbSet<ApplicationUserEntity> ApplicationUsers { get; set; }  
-
         public DbSet<PenEntity> Pens { get; set; }
-
         public DbSet<OldPenVersionsEntity> OldPenVersions { get; set; }
-
         public DbSet<PenLikeEntity> PenLikes { get; set; }
-
         public DbSet<PenCommentEntity> PenComments { get; set; }
-
         public DbSet<MediaWrapper> MediaWrapper { get; set; } 
+        public DbSet<FollowRequest> FollowRequests { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -68,6 +65,20 @@ namespace DataAccess
                       .WithMany(u => u.Comments)
                       .HasForeignKey(pc => pc.UserId)
                       .OnDelete(DeleteBehavior.SetNull);
+            });
+
+
+            modelBuilder.Entity<FollowRequest>(entity =>
+            {
+                entity.HasOne(f => f.Sender)
+                    .WithMany(u => u.SentFollowRequests)
+                    .HasForeignKey(f => f.SenderId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(f => f.Receiver)
+                    .WithMany(u => u.ReceivedFollowRequests)
+                    .HasForeignKey(f => f.ReceiverId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
 
         }

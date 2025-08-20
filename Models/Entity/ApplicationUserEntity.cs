@@ -36,5 +36,8 @@ namespace Models.Entity
         public ICollection<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
  
         public ICollection<PenCommentEntity> Comments { get; set; } = new List<PenCommentEntity>();
+
+        public ICollection<FollowRequest> SentFollowRequests { get; set; } = new List<FollowRequest>();
+        public ICollection<FollowRequest> ReceivedFollowRequests { get; set; } = new List<FollowRequest>();
     }
 }
