@@ -54,7 +54,7 @@ namespace Service.Business
         public async Task<PenEntity> EnsureOwnershipOfPen(int penId, ApplicationUserEntity user)
         {
             var penFromDb = await EnsureExistByIdAndActive(penId);
-            if(penFromDb.Author.Id != user.Id)
+            if(penFromDb.AuthorId != user.Id)
                 throw new ServiceException(
                     message: $"Not allowed",
                     errors: ["You are not allowed to do this action"],

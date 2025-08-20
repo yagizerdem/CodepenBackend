@@ -152,6 +152,39 @@ namespace CodePen.Controllers
                 statusCode: System.Net.HttpStatusCode.OK));
         }
 
+        [HttpGet("get-old-versions")]
+        [Authorize]
+        public async Task<IActionResult> GetOldVersions(
+                [FromQuery] int penId,
+                [FromQuery] int Version,
+                [FromQuery] int page = 1,
+                [FromQuery] int pageSize = 10)
+        {
+            pageSize = Math.Min(pageSize, _maxPageSize);
+            page = Math.Max(1, page);
+            var query = _db.OldPenVersions.AsQueryable();
+
+            query = query
+               .ApplyExactMatch(x => (x.Pen != null ? x.Pen.Id.ToString() : ""), penId.ToString());
+
+            if(Version > 0)
+            {
+
+                query = query
+                    .ApplyExactMatch(x => x.Version.ToString(), Version.ToString());
+            };
+               
+             query = query.ApplySorting(desc: true, a => a.CreatedAt)
+               .ApplyPagination(page, pageSize);
+            
+            var oldVersionsFromDb = await query.ToListAsync();
+
+            return Ok(ApiResponse<List<OldPenVersionsEntity>>.SuccessResponse(
+                data: oldVersionsFromDb,
+                statusCode: System.Net.HttpStatusCode.OK,
+                message: "old versions fetched successfully"));
+        }
+
 
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
