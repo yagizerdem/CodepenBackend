@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models.Entity;
 using Models.Exceptions;
 using Models.ResponseTypes;
@@ -65,6 +66,41 @@ namespace CodePen.Controllers
                 message: "follow request accepted successfully",
                 statusCode: System.Net.HttpStatusCode.OK));
         }
+
+        [HttpPost("unfollow/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> UnfollowUser(string userId)
+        {
+            var user = await GetCurrentUserAsync();
+            var relation = await _relationService.SoftDeleteRelation(user, userId);
+
+            return Ok(ApiResponse<RelationEntity>.SuccessResponse(
+                data: relation,
+                message: "unfollowed successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpPost("remove-follower/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveFollower(string userId)
+        {
+            var user = await GetCurrentUserAsync();
+            var follower = await _db.ApplicationUsers.FirstOrDefaultAsync(
+                x => x.Id == userId
+                && x.Status == Models.Enums.EntityStatus.Active) ??
+                throw new AppException(
+                    message:"follower not found",
+                    errors:["follower not found"],
+                    isOperational:true,
+                    statusCode:System.Net.HttpStatusCode.NotFound);
+
+            var relation = await _relationService.SoftDeleteRelation(follower, user.Id);
+            return Ok(ApiResponse<RelationEntity>.SuccessResponse(
+                data: relation,
+                message: "follower removed successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
 
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()

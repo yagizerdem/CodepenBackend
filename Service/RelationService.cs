@@ -112,5 +112,34 @@ namespace Service
             return followRequest;
         }
 
+        public async Task<RelationEntity> SoftDeleteRelation(ApplicationUserEntity follower, string followingId)
+        {
+            var following =  await _applicationUserRelatedLogic.EnsureUserExistAndActiveById(followingId);
+            var relation = await _relationRelatedLogic.EnsureUsersAreInRelation(
+                follower: follower,
+                following: following);
+        
+            
+            relation.Status = Models.Enums.EntityStatus.Deleted;
+            _db.Relations.Update(relation); 
+            await _db.SaveChangesAsync();
+
+            return relation;
+        }
+
+        public async Task<RelationEntity> HardDeleteRelation(ApplicationUserEntity follower, string followingId)
+        {
+            var following = await _applicationUserRelatedLogic.EnsureUserExistAndActiveById(followingId);
+            var relation = await _relationRelatedLogic.EnsureUsersAreInRelation(
+                follower: follower,
+                following: following);
+
+
+            _db.Relations.Remove(relation);
+            await _db.SaveChangesAsync();
+
+            return relation;
+        }
+
     }
 }

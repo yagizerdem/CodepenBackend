@@ -31,6 +31,7 @@ namespace Utils.ServiceErrorCodes
 
         public const string RelationAlreadyExists = "RELATION_ALREADY_EXISTS";
 
+        public const string RelationNotExists = "RELATION_NOT_EXISTS";
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
@@ -46,6 +47,7 @@ namespace Utils.ServiceErrorCodes
                 SelfFollowRequest => HttpStatusCode.BadRequest,
                 ActiveFollowRequest => HttpStatusCode.BadRequest,
                 RelationAlreadyExists => HttpStatusCode.Conflict,
+                RelationNotExists => HttpStatusCode.NotFound,
                 _ => HttpStatusCode.BadRequest
             };
         }

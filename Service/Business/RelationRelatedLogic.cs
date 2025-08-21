@@ -26,7 +26,7 @@ namespace Service.Business
         {
             var followRequest = await _db.FollowRequests.FirstOrDefaultAsync(
                 x => x.Status == Models.Enums.EntityStatus.Active &&
-                x.FollowRequestStatus == Models.Enums.FollowRequestStatus.Pending && 
+                x.FollowRequestStatus == Models.Enums.FollowRequestStatus.Pending &&
                 x.SenderId == senderId && x.ReceiverId == recieverId);
 
             if (followRequest != null)
@@ -61,7 +61,7 @@ namespace Service.Business
                 throw new ServiceException(
                     message: "Follow request does not exist or cannot be rejected",
                     isOperational: true,
-                    errors: ["Follow request not found, not pending, or you are not the receiver" ],
+                    errors: ["Follow request not found, not pending, or you are not the receiver"],
                     machineCode: ServiceErrorCodes.NotAllowed);
             }
 
@@ -89,7 +89,7 @@ namespace Service.Business
                 throw new ServiceException(
                     message: "Follow request does not exist or cannot be accepted",
                     isOperational: true,
-                    errors: ["Follow request not found, not pending, or you are not the receiver" ],
+                    errors: ["Follow request not found, not pending, or you are not the receiver"],
                     machineCode: ServiceErrorCodes.NotAllowed);
             }
             return followRequest;
@@ -101,8 +101,8 @@ namespace Service.Business
             x.FollowerId == follower.Id &&
             x.FollowingId == following.Id &&
             x.Status == Models.Enums.EntityStatus.Active);
-            
-            if(flag) 
+
+            if (flag)
                 throw new ServiceException(
                     message: "You are already following this user",
                     isOperational: true,
@@ -110,5 +110,21 @@ namespace Service.Business
                     machineCode: ServiceErrorCodes.RelationAlreadyExists);
         }
 
+        public async Task<RelationEntity> EnsureUsersAreInRelation(ApplicationUserEntity follower, ApplicationUserEntity following)
+        {
+            var relation = await _db.Relations.FirstOrDefaultAsync(x =>
+            x.FollowerId == follower.Id &&
+            x.FollowingId == following.Id &&
+            x.Status == Models.Enums.EntityStatus.Active);
+            if (relation == null)
+                throw new ServiceException(
+                    message: "Relation does not exists",
+                    isOperational: true,
+                    errors: ["Relation does not exists"],
+                    machineCode: ServiceErrorCodes.RelationNotExists);
+
+            return relation;
+        }
+    
     }
 }
