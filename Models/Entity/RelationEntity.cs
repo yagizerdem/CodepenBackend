@@ -12,7 +12,7 @@ namespace Models.Entity
         public string? FollowerId { get; set; }
         public ApplicationUserEntity? Follower { get; set; }
     
-        public string? FollowingdId { get; set; }
+        public string? FollowingId { get; set; }
 
         public ApplicationUserEntity? Following { get; set; }
 

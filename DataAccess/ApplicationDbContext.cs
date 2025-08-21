@@ -94,7 +94,7 @@ namespace DataAccess
 
                 entity.HasOne(r => r.Following)
                     .WithMany(u => u.Followers)
-                    .HasForeignKey(r => r.FollowingdId)
+                    .HasForeignKey(r => r.FollowingId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
 

@@ -1,4 +1,5 @@
 ﻿using DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Models.Entity;
 using Models.Exceptions;
 using Service.Business;
@@ -30,6 +31,10 @@ namespace Service
         public async Task<FollowRequest> CreateFollowRequest(ApplicationUserEntity sender, string recieverId)
         {
             var reciever = await _applicationUserRelatedLogic.EnsureUserExistAndActiveById(recieverId);
+
+            await _relationRelatedLogic.EnsureUsersAreNotInRelation(
+                follower: sender,
+                following: reciever);
 
             if (sender.Id == reciever.Id)
                 throw new ServiceException(
@@ -71,11 +76,37 @@ namespace Service
         public async Task<FollowRequest> AcceptFollowRequest(int followRequestId, ApplicationUserEntity currentUser)
         {
             var followRequest = await _relationRelatedLogic.EnsureCanAcceptFollowRequest(followRequestId, currentUser);
+
+            var followerUser = await _db.ApplicationUsers.
+                FirstOrDefaultAsync(u => u.Id == followRequest.SenderId)
+                ?? throw new ServiceException(
+                    message:"following user not found",
+                    errors: ["following user not found"],
+                    isOperational:true,
+                    machineCode:ServiceErrorCodes.UserNotFound);
+            
+            await _relationRelatedLogic.EnsureUsersAreNotInRelation(
+                follower: followerUser,
+                following: currentUser);
+
+            // update the request 
             followRequest.FollowRequestStatus = Models.Enums.FollowRequestStatus.Accepted;
             followRequest.Status = Models.Enums.EntityStatus.Deleted;
             followRequest.UpdatedAt = DateTime.UtcNow;
             followRequest.Status = Models.Enums.EntityStatus.Active;
             _db.FollowRequests.Update(followRequest);
+            // create the relation
+            var relation = new RelationEntity()
+            {
+                Follower = followerUser,
+                Following = currentUser,
+                FollowerId = followerUser.Id,
+                FollowingId = currentUser.Id,
+                Status = Models.Enums.EntityStatus.Active
+            };
+            await _db.Relations.AddAsync(relation);
+
+            // ensure update in 1 transaction
             await _db.SaveChangesAsync();
          
             return followRequest;

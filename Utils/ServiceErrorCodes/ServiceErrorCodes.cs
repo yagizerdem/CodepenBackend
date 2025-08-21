@@ -28,6 +28,9 @@ namespace Utils.ServiceErrorCodes
         public const string SelfFollowRequest = "SELF_FOLLOW_REQUEST";
 
         public const string ActiveFollowRequest = "ACTIVE_FOLLOW_REQUEST";
+
+        public const string RelationAlreadyExists = "RELATION_ALREADY_EXISTS";
+
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
@@ -42,6 +45,7 @@ namespace Utils.ServiceErrorCodes
                 PenCommentNotFound => HttpStatusCode.NotFound,
                 SelfFollowRequest => HttpStatusCode.BadRequest,
                 ActiveFollowRequest => HttpStatusCode.BadRequest,
+                RelationAlreadyExists => HttpStatusCode.Conflict,
                 _ => HttpStatusCode.BadRequest
             };
         }

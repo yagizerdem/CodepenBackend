@@ -26,6 +26,7 @@ namespace Service.Business
         {
             var followRequest = await _db.FollowRequests.FirstOrDefaultAsync(
                 x => x.Status == Models.Enums.EntityStatus.Active &&
+                x.FollowRequestStatus == Models.Enums.FollowRequestStatus.Pending && 
                 x.SenderId == senderId && x.ReceiverId == recieverId);
 
             if (followRequest != null)
@@ -92,6 +93,21 @@ namespace Service.Business
                     machineCode: ServiceErrorCodes.NotAllowed);
             }
             return followRequest;
+        }
+
+        public async Task EnsureUsersAreNotInRelation(ApplicationUserEntity follower, ApplicationUserEntity following)
+        {
+            var flag = await _db.Relations.AnyAsync(x =>
+            x.FollowerId == follower.Id &&
+            x.FollowingId == following.Id &&
+            x.Status == Models.Enums.EntityStatus.Active);
+            
+            if(flag) 
+                throw new ServiceException(
+                    message: "You are already following this user",
+                    isOperational: true,
+                    errors: ["You are already following this user"],
+                    machineCode: ServiceErrorCodes.RelationAlreadyExists);
         }
 
     }
