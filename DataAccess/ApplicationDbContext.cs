@@ -21,6 +21,8 @@ namespace DataAccess
         public DbSet<MediaWrapper> MediaWrapper { get; set; } 
         public DbSet<FollowRequest> FollowRequests { get; set; }
 
+        public DbSet<RelationEntity> Relations { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -80,6 +82,22 @@ namespace DataAccess
                     .HasForeignKey(f => f.ReceiverId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
+
+
+
+            modelBuilder.Entity<RelationEntity>(entity =>
+            {
+                entity.HasOne(r => r.Follower)
+                    .WithMany(u => u.Following)
+                    .HasForeignKey(r => r.FollowerId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(r => r.Following)
+                    .WithMany(u => u.Followers)
+                    .HasForeignKey(r => r.FollowingdId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
 
         }
 

@@ -39,5 +39,10 @@ namespace Models.Entity
 
         public ICollection<FollowRequest> SentFollowRequests { get; set; } = new List<FollowRequest>();
         public ICollection<FollowRequest> ReceivedFollowRequests { get; set; } = new List<FollowRequest>();
+    
+        public ICollection<RelationEntity> Followers { get; set; } = new List<RelationEntity>();
+
+        public ICollection<RelationEntity> Following { get; set; } = new List<RelationEntity>();
+
     }
 }
