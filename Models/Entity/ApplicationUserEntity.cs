@@ -30,18 +30,25 @@ namespace Models.Entity
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public EntityStatus Status { get; set; } = EntityStatus.Active;
-    
+
+        [JsonIgnore]
         public ICollection<PenEntity> Pens { get; set; } = new List<PenEntity>();
 
+        [JsonIgnore]
         public ICollection<PenLikeEntity> Likes { get; set; } = new List<PenLikeEntity>();
- 
+
+        [JsonIgnore]
         public ICollection<PenCommentEntity> Comments { get; set; } = new List<PenCommentEntity>();
 
+        [JsonIgnore]
         public ICollection<FollowRequest> SentFollowRequests { get; set; } = new List<FollowRequest>();
+        [JsonIgnore]
         public ICollection<FollowRequest> ReceivedFollowRequests { get; set; } = new List<FollowRequest>();
-    
+
+        [JsonIgnore]
         public ICollection<RelationEntity> Followers { get; set; } = new List<RelationEntity>();
 
+        [JsonIgnore]
         public ICollection<RelationEntity> Following { get; set; } = new List<RelationEntity>();
 
     }

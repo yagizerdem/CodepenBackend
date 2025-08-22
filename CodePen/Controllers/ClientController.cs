@@ -114,6 +114,24 @@ namespace CodePen.Controllers
 
         }
 
+        [HttpGet("is-loggedin")]
+        public IActionResult IsLoggedIn()
+        {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                throw new AppException(
+                    message: "user is not logged in",
+                    statusCode: System.Net.HttpStatusCode.Unauthorized,
+                    isOperational: true,
+                    errors: ["user is not logged in"]);
+            }
+
+            return Ok(ApiResponse<bool>.SuccessResponse(
+                data: true,
+                message: "user is logged in",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
         //  helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
         {

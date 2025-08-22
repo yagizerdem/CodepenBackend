@@ -101,6 +101,7 @@ namespace CodePen
                     }
                 };
                 options.ExpireTimeSpan = TimeSpan.FromDays(90);
+
             });
 
 
@@ -151,8 +152,8 @@ namespace CodePen
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
