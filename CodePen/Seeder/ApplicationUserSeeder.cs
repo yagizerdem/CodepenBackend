@@ -19,7 +19,7 @@ namespace CodePen.Seeder
                 ApplicationUserEntity user = new()
                 {
                     UserName = $"user{i + 1}",
-                    Email = $"user{i + i}.gmail.com",
+                    Email = $"user{i + i}@.gmail.com",
                     FirstName = $"FirstName{i + 1}",
                     LastName = $"LastName{i + 1}",
                 };
