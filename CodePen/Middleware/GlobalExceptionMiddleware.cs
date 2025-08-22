@@ -61,7 +61,16 @@ namespace CodePen.Middleware
                 message: message,
                 errors: errors,
                 statusCode: statusCode);
-            var json = JsonSerializer.Serialize(response);
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false
+            };
+
+
+            var json = JsonSerializer.Serialize(response, options);
 
             await context.Response.WriteAsync(json);
         }

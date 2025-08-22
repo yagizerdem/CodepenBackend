@@ -141,5 +141,39 @@ namespace Service
             return relation;
         }
 
+        public async Task<List<ApplicationUserEntity>> GetFollowers(ApplicationUserEntity currentUser, 
+            string targetUserId,
+            int page = 1,
+            int limit= 100)
+        {
+            var flag = false; // indicate that current user can reach list of followers of target user
+            if (currentUser.Id == targetUserId) flag = true;
+
+            if (!flag)
+            {
+                var targetUserFromDb = await _db.ApplicationUsers
+                    .Include(u => u.Followers)
+                    .FirstOrDefaultAsync(u => u.Id == targetUserId 
+                        && u.Status == Models.Enums.EntityStatus.Active) ?? 
+                    throw new ServiceException(
+                        message:"user not found",
+                        isOperational:true,
+                        errors: ["user not found"],
+                        machineCode:ServiceErrorCodes.UserNotFound);
+            
+                flag = targetUserFromDb.Followers.Any(f => f.FollowerId == currentUser.Id 
+                        && f.Status == Models.Enums.EntityStatus.Active);
+            }
+
+            var followers = await _db.Relations
+                .Where(r => r.FollowingId == targetUserId && r.Status == Models.Enums.EntityStatus.Active)
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .Select(r => r.Follower)
+                .ToListAsync();
+
+            return followers;
+        }
+
     }
 }

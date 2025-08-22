@@ -101,6 +101,19 @@ namespace CodePen.Controllers
                 statusCode: System.Net.HttpStatusCode.OK));
         }
 
+        [HttpGet("get-followers/{userId}")]
+        [Authorize] 
+        public async Task<IActionResult> GetFollowers(string userId)
+        {
+            var user = await GetCurrentUserAsync();
+            var followers = await _relationService.GetFollowers(currentUser: user, targetUserId: userId);
+
+            return Ok(ApiResponse<List<ApplicationUserEntity>>.SuccessResponse(
+                data: followers,
+                message: "followers retrieved successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
 
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()

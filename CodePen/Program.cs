@@ -116,6 +116,20 @@ namespace CodePen
             // Register AutoMapper with all profiles in the assembly
             builder.Services.AddAutoMapper(c => { }, typeof(MappingProfile).Assembly);
 
+            // configure cors 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    var origins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+                    policy.WithOrigins(origins!)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
+
             var app = builder.Build();
 
             // seeders
@@ -132,6 +146,8 @@ namespace CodePen
             {
                 app.MapOpenApi();
             }
+
+            app.UseCors("AllowFrontend");
 
             app.UseHttpsRedirection();
 
