@@ -54,6 +54,8 @@ namespace Service
                 lockoutOnFailure: true 
             );
 
+            result.ThrowIfFailed();
+
             return userFromDb;
         }
 

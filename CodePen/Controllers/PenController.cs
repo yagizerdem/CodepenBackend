@@ -113,14 +113,26 @@ namespace CodePen.Controllers
                .Include(x => x.Author)
                .ApplySubstringMatch(a => a.Title, Title!)
                .ApplySubstringMatch(a => a.Description!, Description!)
-               .ApplySubstringMatch(a => a.Author.UserName!, AuthorUserName!)
-               .ApplySorting(desc: true, a => a.CreatedAt)
-               .ApplyPagination(page, pageSize);
+               .ApplySubstringMatch(a => a.Author.UserName!, AuthorUserName!);
 
+
+
+            var totalCount = await query.CountAsync();
+
+            query = query
+                .ApplySorting(desc: true, a => a.CreatedAt)
+                .ApplyPagination(page, pageSize);
 
             var pensFromDb = await query.ToListAsync();
-            return Ok(ApiResponse<List<PenEntity>>.SuccessResponse(
-                data:pensFromDb,
+
+            var response = new GetPensRespnose()
+            {
+                TotalHits = totalCount,
+                Pens = pensFromDb
+            };
+
+            return Ok(ApiResponse<GetPensRespnose>.SuccessResponse(
+                data: response,
                 statusCode:System.Net.HttpStatusCode.OK,
                 message:"pens fetches successfully"));
 

@@ -60,7 +60,8 @@ namespace CodePen.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10,
             [FromQuery] string? userName = null,
-            [FromQuery] string? fullName = null)
+            [FromQuery] string? fullName = null,
+            [FromQuery] string? email = null)
         {
             page = page < 1 ? 1 : page;
             pageSize = Math.Min(pageSize, _maxPageSize); // limit page size to 100
@@ -72,6 +73,7 @@ namespace CodePen.Controllers
             query = query
                 .ApplySubstringMatch(x => x.UserName, userName)
                 .ApplySubstringMatch(x => x.FullName, fullName)
+                .ApplySubstringMatch(x => x.Email, email)
                 .ApplyPagination(page, pageSize)
                 .ApplySorting(desc: true, keySelector: x => x.CreatedAt);
 

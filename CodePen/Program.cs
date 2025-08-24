@@ -103,6 +103,8 @@ namespace CodePen
                 options.ExpireTimeSpan = TimeSpan.FromDays(90);
                 options.Cookie.SameSite = SameSiteMode.None;
                 options.SlidingExpiration = true;
+                options.Cookie.HttpOnly = true;
+
             });
 
 
