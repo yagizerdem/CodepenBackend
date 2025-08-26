@@ -270,6 +270,21 @@ namespace CodePen.Controllers
                 statusCode:System.Net.HttpStatusCode.OK));
         }
 
+        [HttpGet("get-total-likes-ofpen/{penId}")]
+        [Authorize]
+
+        public async Task<IActionResult> GetTotalLikesOfPen(int penId)
+        {
+            var totalLikes = await _db.PenLikes
+                .Where(pl => pl.PenId == penId && pl.Status == Models.Enums.EntityStatus.Active)
+                .CountAsync();
+            return Ok(ApiResponse<int>.SuccessResponse(
+                data: totalLikes,
+                message: "total likes fetched successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }   
+
+
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
         {

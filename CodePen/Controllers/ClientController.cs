@@ -134,6 +134,24 @@ namespace CodePen.Controllers
                 statusCode: System.Net.HttpStatusCode.OK));
         }
 
+        [HttpGet("get-user-by-id/{userId}")]
+        public async Task<IActionResult> GetUserById(string userId)
+        {
+            var user = await GetCurrentUserAsync();
+            var userFromDb = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId &&
+            u.Status == Models.Enums.EntityStatus.Active) ??
+            throw new AppException(
+                message:$"user not found",
+                statusCode:System.Net.HttpStatusCode.NotFound,
+                isOperational:true,
+                errors: [$"user with id {userId} not found"]);
+
+            return Ok(ApiResponse<ApplicationUserEntity>.SuccessResponse(
+                data: userFromDb,
+                message: "user fetched successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
         //  helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
         {

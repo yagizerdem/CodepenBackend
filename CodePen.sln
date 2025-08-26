@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestService", "TestService\TestService.csproj", "{0DE56FFD-A334-4C10-B2B9-0FB410E21E34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seeders", "Seeders\Seeders.csproj", "{E45FCCB7-6E27-44A5-87D9-0C849A772B7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{0DE56FFD-A334-4C10-B2B9-0FB410E21E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DE56FFD-A334-4C10-B2B9-0FB410E21E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DE56FFD-A334-4C10-B2B9-0FB410E21E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E45FCCB7-6E27-44A5-87D9-0C849A772B7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E45FCCB7-6E27-44A5-87D9-0C849A772B7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E45FCCB7-6E27-44A5-87D9-0C849A772B7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E45FCCB7-6E27-44A5-87D9-0C849A772B7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -72,6 +72,7 @@ namespace CodePen.Controllers
 
             var query = _db.PenComments.AsQueryable();
             query = query
+                .Include(x => x.User)
                 .ApplyExactMatch(x => x.User.Id, userId)
                 .ApplyExactMatch(x => x.PenId.ToString(), penId.ToString())
                 .ApplySubstringMatch(x => x.Content, content)

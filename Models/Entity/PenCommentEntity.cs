@@ -12,11 +12,11 @@ namespace Models.Entity
         public string Content { get; set; } = string.Empty;
         public string? UserId { get; set; }
         
-        [JsonIgnore]
+       
         public ApplicationUserEntity? User { get; set; } = null!;
         public int? PenId { get; set; }
 
-        [JsonIgnore]
+  
         public PenEntity? Pen { get; set; } = null!;
 
     }
