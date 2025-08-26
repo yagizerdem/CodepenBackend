@@ -113,7 +113,8 @@ namespace CodePen.Controllers
                .Include(x => x.Author)
                .ApplySubstringMatch(a => a.Title, Title!)
                .ApplySubstringMatch(a => a.Description!, Description!)
-               .ApplySubstringMatch(a => a.Author.UserName!, AuthorUserName!);
+               .ApplySubstringMatch(a => a.Author.UserName!, AuthorUserName!)
+               .Where(x => x.Status == Models.Enums.EntityStatus.Active);
 
 
 
@@ -164,10 +165,10 @@ namespace CodePen.Controllers
                 statusCode: System.Net.HttpStatusCode.OK));
         }
 
-        [HttpGet("get-old-versions")]
+        [HttpGet("get-old-versions/{penId}")]
         [Authorize]
         public async Task<IActionResult> GetOldVersions(
-                [FromQuery] int penId,
+                int penId,
                 [FromQuery] int Version,
                 [FromQuery] int page = 1,
                 [FromQuery] int pageSize = 10)
@@ -197,6 +198,77 @@ namespace CodePen.Controllers
                 message: "old versions fetched successfully"));
         }
 
+
+
+        [HttpGet("get-old-versionnames/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> GetOldVersionNames(int penId)
+        {
+            var oldVersionsFromDb = await _db.OldPenVersions
+                .Where(p => p.PenId == penId && p.Status == Models.Enums.EntityStatus.Active)
+                .Select(x => new OldVersionNameDTO
+                {
+                    Id = x.Id,
+                    Version = x.Version,
+                    AuthorId = x.Pen != null ? x.Pen.AuthorId : null,
+                })
+                .ToListAsync();
+
+            if (oldVersionsFromDb == null || oldVersionsFromDb.Count == 0)
+            {
+                throw new AppException(
+                    isOperational: true,
+                    message: $"pen with id {penId} not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound);
+            }
+
+            return Ok(ApiResponse<List<OldVersionNameDTO>>.SuccessResponse(
+                data: oldVersionsFromDb,
+                statusCode: System.Net.HttpStatusCode.OK,
+                message: "old versions fetched successfully"));
+        }
+
+
+
+        [HttpGet("get-pen-byid/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetPenById(int id)
+        {
+
+            var penFromDb = await _db.Pens
+                .Include(p => p.Author)
+                .FirstOrDefaultAsync(p => p.Id == id && p.Status == Models.Enums.EntityStatus.Active) ??
+                throw new AppException(
+                    message: $"pen with id {id} not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound);
+
+            return Ok(ApiResponse<PenEntity>.SuccessResponse(
+                data: penFromDb,
+                message: "pen fetched successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+
+        [HttpGet("get-author-bypenid/{penId}")]
+        [Authorize]
+        public async Task<IActionResult> GetuthorByPenId(int penId)
+        {
+            var penFromDb = await _db.Pens.Include(p => p.Author)
+                .FirstOrDefaultAsync(p => p.Id == penId) ??
+                 throw new AppException(
+                    message: $"pen with id {penId} not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound);
+
+            ApplicationUserEntity author = penFromDb.Author ??
+                throw new AppException(
+                    message: "author not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound);
+
+            return Ok(ApiResponse<ApplicationUserEntity>.SuccessResponse(
+                data:author,
+                message:"author fetched successfully",
+                statusCode:System.Net.HttpStatusCode.OK));
+        }
 
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
