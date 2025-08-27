@@ -162,6 +162,27 @@ namespace Service
 
             return mediaWrapperFromDb;
         }
+        
+        public async Task<(int followers, int followings)> GetUsersFollowerFollowingsCount(
+            string targetUserId,
+            ApplicationUserEntity currentUser)
+        {
+
+            var followersTask = await _db.Relations
+                .AsNoTracking()
+                .Where(r => r.Status == Models.Enums.EntityStatus.Active
+                         && r.FollowingId == targetUserId)   
+                .CountAsync();
+
+            var followingsTask = await _db.Relations
+                .AsNoTracking()
+                .Where(r => r.Status == Models.Enums.EntityStatus.Active
+                         && r.FollowerId == targetUserId)    
+                .CountAsync();
+
+            return (followersTask, followingsTask);
+        }
+
 
         // helper 
         private static byte[] ConvertToByteArray(IFormFile file)

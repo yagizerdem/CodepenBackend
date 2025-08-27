@@ -12,12 +12,10 @@ namespace Models.Entity
     {
         public string? SenderId { get; set; }
         
-        [JsonIgnore]
         public ApplicationUserEntity? Sender { get; set; } = null!;
 
         public string? ReceiverId { get; set; }
         
-        [JsonIgnore]
         public ApplicationUserEntity? Receiver { get; set; } = null!;
         public FollowRequestStatus FollowRequestStatus { get; set; } = FollowRequestStatus.Pending; 
     }

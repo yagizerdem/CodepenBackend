@@ -29,7 +29,6 @@ namespace CodePen.Controllers
 
         [HttpPost("send-follow-request/{userId}")]
         [Authorize]
-
         public async Task<IActionResult> SendFollowRequest(string userId)
         {
             var user = await GetCurrentUserAsync();
@@ -103,10 +102,20 @@ namespace CodePen.Controllers
 
         [HttpGet("get-followers/{userId}")]
         [Authorize] 
-        public async Task<IActionResult> GetFollowers(string userId)
+        public async Task<IActionResult> GetFollowers(string userId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 30)
         {
+
+            page = page < 1 ? 1 : page;
+            page = Math.Min(page, 100); // limit page size to 100
+
             var user = await GetCurrentUserAsync();
-            var followers = await _relationService.GetFollowers(currentUser: user, targetUserId: userId);
+            var followers = await _relationService.GetFollowers(
+                currentUser: user, 
+                targetUserId: userId,
+                page:page,
+                limit:pageSize);
 
             return Ok(ApiResponse<List<ApplicationUserEntity>>.SuccessResponse(
                 data: followers,
@@ -114,6 +123,48 @@ namespace CodePen.Controllers
                 statusCode: System.Net.HttpStatusCode.OK));
         }
 
+        [HttpGet("get-followings/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetFolloweings(string userId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 30)
+        {
+
+            page = page < 1 ? 1 : page;
+            page = Math.Min(page, 100); // limit page size to 100
+
+            var user = await GetCurrentUserAsync();
+            var followers = await _relationService.GetFollowings(
+                currentUser: user,
+                targetUserId: userId,
+                page: page,
+                limit: pageSize);
+
+            return Ok(ApiResponse<List<ApplicationUserEntity>>.SuccessResponse(
+                data: followers,
+                message: "followers retrieved successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
+
+
+        [HttpGet("get-pending-follow-requests")]
+        [Authorize]
+        public async Task<IActionResult> GetPendingFollowRequests(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 30)
+        {
+            page = page < 1 ? 1 : page;
+            page = Math.Min(page, 100); // limit page size to 100
+            var user = await GetCurrentUserAsync();
+            var requests = await _relationService.GetPendingFollowRequests(
+                user,
+                page,
+                pageSize);
+            return Ok(ApiResponse<List<FollowRequest>>.SuccessResponse(
+                data: requests,
+                message: "pending follow requests retrieved successfully",
+                statusCode: System.Net.HttpStatusCode.OK));
+        }
 
         // helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()

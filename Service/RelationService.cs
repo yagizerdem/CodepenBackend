@@ -163,6 +163,13 @@ namespace Service
             
                 flag = targetUserFromDb.Followers.Any(f => f.FollowerId == currentUser.Id 
                         && f.Status == Models.Enums.EntityStatus.Active);
+
+                if (!flag)
+                    throw new ServiceException(
+                        message: "You are not allowed to view the followings of this user",
+                        isOperational: true,
+                        errors: ["You are not allowed to view the followings of this user"],
+                        machineCode: ServiceErrorCodes.NotAllowed);
             }
 
             var followers = await _db.Relations
@@ -173,6 +180,65 @@ namespace Service
                 .ToListAsync();
 
             return followers;
+        }
+
+
+
+        public async Task<List<ApplicationUserEntity>> GetFollowings(ApplicationUserEntity currentUser,
+             string targetUserId,
+             int page = 1,
+             int limit = 100)
+        {
+            var flag = false; // indicate that current user can reach list of followers of target user
+            if (currentUser.Id == targetUserId) flag = true;
+
+            if (!flag)
+            {
+                var targetUserFromDb = await _db.ApplicationUsers
+                    .Include(u => u.Followers)
+                    .FirstOrDefaultAsync(u => u.Id == targetUserId
+                        && u.Status == Models.Enums.EntityStatus.Active) ??
+                    throw new ServiceException(
+                        message: "user not found",
+                        isOperational: true,
+                        errors: ["user not found"],
+                        machineCode: ServiceErrorCodes.UserNotFound);
+
+                flag = targetUserFromDb.Followers.Any(f => f.FollowerId == currentUser.Id
+                        && f.Status == Models.Enums.EntityStatus.Active);
+
+                if(!flag)
+                    throw new ServiceException(
+                        message: "You are not allowed to view the followings of this user",
+                        isOperational: true,
+                        errors: ["You are not allowed to view the followings of this user"],
+                        machineCode: ServiceErrorCodes.NotAllowed);
+            }
+
+            var followings = await _db.Relations
+                .Where(r => r.FollowerId == targetUserId && r.Status == Models.Enums.EntityStatus.Active)
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .Select(r => r.Following)
+                .ToListAsync();
+
+            return followings;
+        }
+
+
+        public async Task<List<FollowRequest>> GetPendingFollowRequests(ApplicationUserEntity currentUser,
+            int page = 1,
+            int limit = 100)
+        {
+            var followRequests = await _db.FollowRequests
+                .Where(fr => fr.ReceiverId == currentUser.Id
+                    && fr.Status == Models.Enums.EntityStatus.Active
+                    && fr.FollowRequestStatus == Models.Enums.FollowRequestStatus.Pending)
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .Include(fr => fr.Sender)
+                .ToListAsync();
+            return followRequests;
         }
 
     }

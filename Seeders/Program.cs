@@ -1,5 +1,6 @@
 ﻿using DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +22,11 @@ namespace Seeders
 
             //SeedLikesToUsersPosts();
             //SeedCommentsToUsersPosts();
+
+            //SeedFollowersToUser();
+            //SeedFollowingsToUser();
+
+            //SeedFollowRequestsToUser();
         }
 
         private static void Init()
@@ -118,6 +124,99 @@ namespace Seeders
         }
 
 
+        private static void SeedFollowersToUser()
+        {
+            ApplicationDbContext db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            ApplicationUserEntity user = db.Users.FirstOrDefault(x => x.Email == "yagizerdem@gmail.com") ??
+                throw
+                new Exception("user not found");
+
+            List<ApplicationUserEntity> otherUsers = db.Users
+                .Where(x => x.Id != user.Id)
+                .ToList();
+
+            Random rnd = new();
+
+            var sampleUser = otherUsers.OrderBy(_ => rnd.Next(999)).Take(20).ToList();
+
+            sampleUser.ForEach(x =>
+            {
+                RelationEntity relation = new()
+                {
+                    Follower = x,
+                    Following = user,
+                    FollowerId = x.Id,
+                    FollowingId = user.Id,
+                };
+                db.Relations.Add(relation);
+            });
+
+            db.SaveChanges();
+
+        }
+
+        private static void SeedFollowingsToUser()
+        {
+            ApplicationDbContext db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            ApplicationUserEntity user = db.Users.FirstOrDefault(x => x.Email == "yagizerdem@gmail.com") ??
+                throw
+                new Exception("user not found");
+
+            List<ApplicationUserEntity> otherUsers = db.Users
+                .Where(x => x.Id != user.Id)
+                .ToList();
+
+            Random rnd = new();
+
+            var sampleUser = otherUsers.OrderBy(_ => rnd.Next(999)).Take(35).ToList();
+
+            sampleUser.ForEach(x =>
+            {
+                RelationEntity relation = new()
+                {
+                    Follower = user,
+                    Following = x,
+                    FollowerId = user.Id,
+                    FollowingId = x.Id,
+                };
+                db.Relations.Add(relation);
+            });
+
+            db.SaveChanges();
+        }
+
+        private static void SeedFollowRequestsToUser()
+        {
+            ApplicationDbContext db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            ApplicationUserEntity user = db.Users.FirstOrDefault(x => x.Email == "yagizerdem@gmail.com") ??
+                throw
+                new Exception("user not found");
+
+            List<ApplicationUserEntity> otherUsers = db.Users
+            .Where(x => x.Id != user.Id)
+            .ToList();
+
+            Random rnd = new();
+
+            var sampleUser = otherUsers.OrderBy(_ => rnd.Next(999)).Take(35).ToList();
+        
+            sampleUser.ForEach(x =>
+            {
+                FollowRequest followRequest = new()
+                {
+                    Receiver = user,
+                    ReceiverId = user.Id,
+                    Sender = x,
+                    SenderId = x.Id,
+                };
+                db.FollowRequests.Add(followRequest);
+            });
+
+            db.SaveChanges();
+        }
 
         private static string LoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     }

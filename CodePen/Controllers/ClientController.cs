@@ -1,4 +1,5 @@
 ﻿using DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,7 @@ namespace CodePen.Controllers
         }
 
         [HttpPost("upload-profile-image")]
+        [Authorize]
         public async Task<IActionResult> UploadProfilePicture([FromForm] UploadFileDTO dto)
         {
             var user = await GetCurrentUserAsync();
@@ -43,6 +45,7 @@ namespace CodePen.Controllers
         }
 
         [HttpPost("remove-profile-image")]
+        [Authorize]
         public async Task<IActionResult> RemoveProfileImage()
         {
             var user = await GetCurrentUserAsync();
@@ -86,6 +89,7 @@ namespace CodePen.Controllers
         }
 
         [HttpGet("get-me")]
+        [Authorize]
         public async Task<IActionResult> GetMe()
         {
             var user = await GetCurrentUserAsync();
@@ -97,6 +101,7 @@ namespace CodePen.Controllers
         }
 
         [HttpGet("get-profile-image/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetProfileImages(string userId)
         {
             var user = await GetCurrentUserAsync();
@@ -135,6 +140,7 @@ namespace CodePen.Controllers
         }
 
         [HttpGet("get-user-by-id/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetUserById(string userId)
         {
             var user = await GetCurrentUserAsync();
@@ -151,6 +157,26 @@ namespace CodePen.Controllers
                 message: "user fetched successfully",
                 statusCode: System.Net.HttpStatusCode.OK));
         }
+
+        [HttpGet("get-follower-following-count/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetFollowerAndFollowingCount(string userId)
+        {
+            var user = await GetCurrentUserAsync();
+            (int followerCount , int followingCount)= await _applicationUserService.GetUsersFollowerFollowingsCount(userId, user);
+
+            return Ok(ApiResponse<object>
+                .SuccessResponse(
+                message: "users fetched successfully",
+                statusCode: System.Net.HttpStatusCode.OK,
+                data: new 
+                {
+                    followerCount = followerCount,
+                    followingCount = followingCount
+                }));
+        }
+
+        
 
         //  helpers
         public async Task<ApplicationUserEntity> GetCurrentUserAsync()
