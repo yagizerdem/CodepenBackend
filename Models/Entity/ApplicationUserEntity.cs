@@ -51,5 +51,11 @@ namespace Models.Entity
         [JsonIgnore]
         public ICollection<RelationEntity> Following { get; set; } = new List<RelationEntity>();
 
+        [JsonIgnore]
+        public ICollection<ArticleEntity> Articles { get; set; } = new List<ArticleEntity>();
+
+
+        [JsonIgnore]
+        public ICollection<BookMark> BookMarks { get; set; }
     }
 }

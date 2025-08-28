@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,12 @@ namespace Utils.ServiceErrorCodes
         public const string RelationAlreadyExists = "RELATION_ALREADY_EXISTS";
 
         public const string RelationNotExists = "RELATION_NOT_EXISTS";
+
+        public const string ArticleNotFound = "ARTICLE_NOT_FOUND";
+        
+        public const string BookMarkAlreadyExists = "BOOKMARK_ALREADY_EXISTS";
+
+        public const string BookmarkNotExists = "BOOKMARK_NOT_EXISTS";
         public static HttpStatusCode MapToStatusCode(string errorCode)
         {
             return errorCode switch
@@ -48,6 +55,9 @@ namespace Utils.ServiceErrorCodes
                 ActiveFollowRequest => HttpStatusCode.BadRequest,
                 RelationAlreadyExists => HttpStatusCode.Conflict,
                 RelationNotExists => HttpStatusCode.NotFound,
+                ArticleNotFound => HttpStatusCode.NotFound,
+                BookMarkAlreadyExists  => HttpStatusCode.Conflict,
+                BookmarkNotExists => HttpStatusCode.NotFound,
                 _ => HttpStatusCode.BadRequest
             };
         }

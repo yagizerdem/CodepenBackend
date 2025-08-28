@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250827174319_mig11")]
+    partial class mig11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,7 +265,6 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("FullText")
                         .IsRequired()
-                        .HasMaxLength(100000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PlannedPublishDate")
@@ -273,8 +275,7 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -287,39 +288,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Articles");
-                });
-
-            modelBuilder.Entity("Models.Entity.BookMark", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArticleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BookMarks");
                 });
 
             modelBuilder.Entity("Models.Entity.FollowRequest", b =>
@@ -647,25 +615,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Models.Entity.BookMark", b =>
-                {
-                    b.HasOne("Models.Entity.ArticleEntity", "Article")
-                        .WithMany("BookMarks")
-                        .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Models.Entity.ApplicationUserEntity", "User")
-                        .WithMany("BookMarks")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Models.Entity.FollowRequest", b =>
                 {
                     b.HasOne("Models.Entity.ApplicationUserEntity", "Receiver")
@@ -757,8 +706,6 @@ namespace DataAccess.Migrations
                 {
                     b.Navigation("Articles");
 
-                    b.Navigation("BookMarks");
-
                     b.Navigation("Comments");
 
                     b.Navigation("Followers");
@@ -772,11 +719,6 @@ namespace DataAccess.Migrations
                     b.Navigation("ReceivedFollowRequests");
 
                     b.Navigation("SentFollowRequests");
-                });
-
-            modelBuilder.Entity("Models.Entity.ArticleEntity", b =>
-                {
-                    b.Navigation("BookMarks");
                 });
 
             modelBuilder.Entity("Models.Entity.PenEntity", b =>

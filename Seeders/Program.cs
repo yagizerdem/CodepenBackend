@@ -27,6 +27,11 @@ namespace Seeders
             //SeedFollowingsToUser();
 
             //SeedFollowRequestsToUser();
+
+            //SeedArticlesToUsers();
+
+            //SeedBookmarksToUser();
+
         }
 
         private static void Init()
@@ -215,6 +220,78 @@ namespace Seeders
                 db.FollowRequests.Add(followRequest);
             });
 
+            db.SaveChanges();
+        }
+
+        private static void SeedArticlesToUsers()
+        {
+            ApplicationDbContext db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var users = db.Users.ToList();
+
+            Random rnd = new();
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                ApplicationUserEntity user = users[i];
+                var articlesCount = rnd.Next(3, 15);
+
+                Enumerable.Range(0, articlesCount).ToList().ForEach(_ =>
+                {
+                    ArticleEntity article = new()
+                    {
+                        Title = string.Join(" ", LoremIpsum.Split(" ")
+                        .OrderBy(_ => rnd.Next(999))
+                        .Take(rnd.Next(3, 10))),
+                        FullText = string.Join(" ",Enumerable.Range(0, rnd.Next(10)).ToList().Select(_ =>
+                        {
+                            return string.Join(" ", LoremIpsum.Split(" ")
+                        .OrderBy(_ => rnd.Next(999))
+                        .Take(rnd.Next(20, LoremIpsum.Split(" ").Length)));
+                        })),
+                        Author = user,
+                        AuthorId = user.Id,
+                        Visibility = Models.Enums.ArticleVisibility.Public,
+                        Status = Models.Enums.EntityStatus.Active,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                    };
+                
+                    db.Articles.Add(article);
+
+                });
+
+            }
+
+            db.SaveChanges();
+
+        }
+
+        private static void SeedBookmarksToUser()
+        {
+            ApplicationDbContext db = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            ApplicationUserEntity user = db.Users.FirstOrDefault(x => x.Email == "yagizerdem@gmail.com") ??
+                throw
+                new Exception("user not found");
+
+            var articles = db.Articles.ToList();
+            articles = articles.OrderBy(x => Guid.NewGuid()).Take(100).ToList();
+
+
+            for (int i = 0; i < 100; i++)
+            {
+                var article= articles[i];
+                BookMark mark = new()
+                {
+                    ArticleId = article.Id,
+                    Article = article,
+                    User = user,
+                    UserId = user.Id,
+                };  
+                db.BookMarks.Add(mark);
+            }
+        
             db.SaveChanges();
         }
 

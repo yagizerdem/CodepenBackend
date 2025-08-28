@@ -23,6 +23,8 @@ namespace CodePen
 
 
             CreateMap<CreatePenCommentDTO, PenCommentEntity>();
+            CreateMap<CreateArticleDTO, ArticleEntity>().ForMember(opt => opt.CoverImage,
+                   opt => opt.Ignore());
         }
     }
 }

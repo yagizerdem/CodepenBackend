@@ -20,8 +20,10 @@ namespace DataAccess
         public DbSet<PenCommentEntity> PenComments { get; set; }
         public DbSet<MediaWrapper> MediaWrapper { get; set; } 
         public DbSet<FollowRequest> FollowRequests { get; set; }
-
         public DbSet<RelationEntity> Relations { get; set; }
+        public DbSet<ArticleEntity> Articles { get; set; }
+
+        public DbSet<BookMark> BookMarks { get; set; }  
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -99,7 +101,30 @@ namespace DataAccess
             });
 
 
+            modelBuilder.Entity<ArticleEntity>(entity =>
+            {
+                entity.HasOne(r => r.Author)
+                    .WithMany(u => u.Articles)
+                    .HasForeignKey(r => r.AuthorId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+
+            modelBuilder.Entity<BookMark>(entity =>
+            {
+                entity.HasOne(r => r.User)
+                    .WithMany(u => u.BookMarks)
+                    .HasForeignKey(r => r.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(r => r.Article)
+                    .WithMany(u => u.BookMarks)
+                    .HasForeignKey(r => r.ArticleId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
         }
+
 
 
     }
