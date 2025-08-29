@@ -16,6 +16,10 @@ namespace Models.Entity
         public string Title { get; set; }
         [MaxLength(100000)]
         public string FullText { get; set; }
+
+        [MaxLength(500)]
+        public string Abstract { get; set; } // short summary of the article    
+
         public string AuthorId { get; set; }
         public ApplicationUserEntity  Author { get; set; }
         public DateTime PlannedPublishDate { get; set; } // must be future date

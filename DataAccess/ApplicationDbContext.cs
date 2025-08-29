@@ -22,8 +22,8 @@ namespace DataAccess
         public DbSet<FollowRequest> FollowRequests { get; set; }
         public DbSet<RelationEntity> Relations { get; set; }
         public DbSet<ArticleEntity> Articles { get; set; }
-
         public DbSet<BookMark> BookMarks { get; set; }  
+        public DbSet<PrivateChatMessageEntity> PrivateChatMessages { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -120,6 +120,20 @@ namespace DataAccess
                 entity.HasOne(r => r.Article)
                     .WithMany(u => u.BookMarks)
                     .HasForeignKey(r => r.ArticleId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+
+            modelBuilder.Entity<PrivateChatMessageEntity>(entity =>
+            {
+                entity.HasOne(r => r.Sender)
+                    .WithMany(u => u.SendPrivateChatMessages)
+                    .HasForeignKey(r => r.SenderId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(r => r.Receiver)
+                    .WithMany(u => u.RecievedPrivateChatMessages)
+                    .HasForeignKey(r => r.ReceiverId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
 

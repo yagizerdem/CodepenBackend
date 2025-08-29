@@ -1,18 +1,10 @@
 ﻿using AutoMapper;
 using DataAccess;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models.DTO;
 using Models.Entity;
 using Models.Exceptions;
 using Service.Business;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using Utils.ServiceErrorCodes;
 
 namespace Service
@@ -39,11 +31,14 @@ namespace Service
         {
             ArticleEntity article = _mapper.Map<ArticleEntity>(dto);
 
-            await using var memoryStream = new MemoryStream();
-            await dto.CoverImage.CopyToAsync(memoryStream);
-            byte[] coverImage = memoryStream.ToArray();
+            if (dto.CoverImage != null)
+            {
+                await using var memoryStream = new MemoryStream();
+                await dto.CoverImage.CopyToAsync(memoryStream);
+                byte[] coverImage = memoryStream.ToArray();
+                article.CoverImage = coverImage;
+            }
 
-            article.CoverImage = coverImage;
             article.Author = author;
             article.AuthorId = author.Id;
 
@@ -60,7 +55,8 @@ namespace Service
             if (dto.Title != null) article.Title = dto.Title;
             if(dto.FullText != null) article.FullText = dto.FullText;
             if(dto.Visibility != null) article.Visibility = (Models.Enums.ArticleVisibility)dto.Visibility;
-            
+            if(dto.Abstract != null) article.Abstract = dto.Abstract;
+
             if (dto.CoverImage != null)
             {
                 await using var memoryStream = new MemoryStream();

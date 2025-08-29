@@ -118,6 +118,8 @@ namespace CodePen
             builder.Services.AddScoped<RelationService>();  
             builder.Services.AddScoped<ArticleService>();
             builder.Services.AddScoped<ArticleRelatedLogic>();
+            builder.Services.AddScoped<PrivateChatService>();
+            builder.Services.AddSignalR(); // register SignalR  
 
             // Register AutoMapper with all profiles in the assembly
             builder.Services.AddAutoMapper(c => { }, typeof(MappingProfile).Assembly);
@@ -161,6 +163,8 @@ namespace CodePen
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapHub<ChatHub>("/private-chat");
+
 
             app.Run();
         }

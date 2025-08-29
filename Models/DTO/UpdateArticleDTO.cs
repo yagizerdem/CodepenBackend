@@ -19,6 +19,10 @@ namespace Models.DTO
         public string? Title { get; set; }
         [MaxLength(100000)]
         public string? FullText { get; set; }
+
+        [MaxLength(500)]
+        public string? Abstract { get; set; } // short summary of the article    
+
         public ArticleVisibility? Visibility { get; set; } 
         public IFormFile? CoverImage { get; set; } 
     }

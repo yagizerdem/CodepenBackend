@@ -56,6 +56,13 @@ namespace Models.Entity
 
 
         [JsonIgnore]
-        public ICollection<BookMark> BookMarks { get; set; }
+        public ICollection<BookMark> BookMarks { get; set; } = new List<BookMark>();    
+
+        [JsonIgnore]
+        public ICollection<PrivateChatMessageEntity> SendPrivateChatMessages { get; set; } = new List<PrivateChatMessageEntity>();
+
+
+        [JsonIgnore]
+        public ICollection<PrivateChatMessageEntity> RecievedPrivateChatMessages { get; set; } = new List<PrivateChatMessageEntity>();
     }
 }

@@ -243,7 +243,13 @@ namespace Seeders
                         Title = string.Join(" ", LoremIpsum.Split(" ")
                         .OrderBy(_ => rnd.Next(999))
                         .Take(rnd.Next(3, 10))),
-                        FullText = string.Join(" ",Enumerable.Range(0, rnd.Next(10)).ToList().Select(_ =>
+                        FullText = string.Join(" ",Enumerable.Range(0, rnd.Next(20)).ToList().Select(_ =>
+                        {
+                            return string.Join(" ", LoremIpsum.Split(" ")
+                        .OrderBy(_ => rnd.Next(999))
+                        .Take(rnd.Next(20, LoremIpsum.Split(" ").Length)));
+                        })),
+                        Abstract = string.Join(" ", Enumerable.Range(1, 1).ToList().Select(_ =>
                         {
                             return string.Join(" ", LoremIpsum.Split(" ")
                         .OrderBy(_ => rnd.Next(999))

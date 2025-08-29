@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250828224444_mig13")]
+    partial class mig13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -382,9 +385,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("MimeType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PrivateChatMessageEntityId")
-                        .HasColumnType("int");
-
                     b.Property<long?>("Size")
                         .HasColumnType("bigint");
 
@@ -395,8 +395,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PrivateChatMessageEntityId");
 
                     b.ToTable("MediaWrapper");
                 });
@@ -554,44 +552,6 @@ namespace DataAccess.Migrations
                     b.ToTable("PenLikes");
                 });
 
-            modelBuilder.Entity("Models.Entity.PrivateChatMessageEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("PrivateChatMessages");
-                });
-
             modelBuilder.Entity("Models.Entity.RelationEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -731,13 +691,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("Models.Entity.MediaWrapper", b =>
-                {
-                    b.HasOne("Models.Entity.PrivateChatMessageEntity", null)
-                        .WithMany("Media")
-                        .HasForeignKey("PrivateChatMessageEntityId");
-                });
-
             modelBuilder.Entity("Models.Entity.OldPenVersionsEntity", b =>
                 {
                     b.HasOne("Models.Entity.PenEntity", "Pen")
@@ -791,25 +744,6 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.Entity.PrivateChatMessageEntity", b =>
-                {
-                    b.HasOne("Models.Entity.ApplicationUserEntity", "Receiver")
-                        .WithMany("RecievedPrivateChatMessages")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Models.Entity.ApplicationUserEntity", "Sender")
-                        .WithMany("SendPrivateChatMessages")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("Models.Entity.RelationEntity", b =>
                 {
                     b.HasOne("Models.Entity.ApplicationUserEntity", "Follower")
@@ -845,10 +779,6 @@ namespace DataAccess.Migrations
 
                     b.Navigation("ReceivedFollowRequests");
 
-                    b.Navigation("RecievedPrivateChatMessages");
-
-                    b.Navigation("SendPrivateChatMessages");
-
                     b.Navigation("SentFollowRequests");
                 });
 
@@ -864,11 +794,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("OldVersions");
-                });
-
-            modelBuilder.Entity("Models.Entity.PrivateChatMessageEntity", b =>
-                {
-                    b.Navigation("Media");
                 });
 #pragma warning restore 612, 618
         }

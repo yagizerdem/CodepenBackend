@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250829194147_mig14")]
+    partial class mig14
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -382,9 +385,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("MimeType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PrivateChatMessageEntityId")
-                        .HasColumnType("int");
-
                     b.Property<long?>("Size")
                         .HasColumnType("bigint");
 
@@ -395,8 +395,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PrivateChatMessageEntityId");
 
                     b.ToTable("MediaWrapper");
                 });
@@ -731,13 +729,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("Models.Entity.MediaWrapper", b =>
-                {
-                    b.HasOne("Models.Entity.PrivateChatMessageEntity", null)
-                        .WithMany("Media")
-                        .HasForeignKey("PrivateChatMessageEntityId");
-                });
-
             modelBuilder.Entity("Models.Entity.OldPenVersionsEntity", b =>
                 {
                     b.HasOne("Models.Entity.PenEntity", "Pen")
@@ -864,11 +855,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("OldVersions");
-                });
-
-            modelBuilder.Entity("Models.Entity.PrivateChatMessageEntity", b =>
-                {
-                    b.Navigation("Media");
                 });
 #pragma warning restore 612, 618
         }

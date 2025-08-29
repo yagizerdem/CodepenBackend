@@ -16,6 +16,10 @@ namespace Models.DTO
         [MinLength(2)]
         [MaxLength(100)]
         public string Title { get; set; }
+
+        [MaxLength(500)]
+        public string Abstract { get; set; } // short summary of the article    
+
         [MaxLength(100000)]
         public string FullText { get; set; }
         public DateTime PlannedPublishDate { get; set; } = DateTime.UtcNow; // must be future date 
