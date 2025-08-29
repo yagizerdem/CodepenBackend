@@ -127,11 +127,11 @@ namespace Service
 
 
             // validation end 
-            if (!flag)
-                return null;
+            //if (!flag)
+            //    return null;
 
             var userFromDb = await _db.ApplicationUsers
-                .FirstOrDefaultAsync(x => x.Id == user.Id &&
+                .FirstOrDefaultAsync(x => x.Id == userId &&
                 x.Status == Models.Enums.EntityStatus.Active)
                 ?? throw new ServiceException(
                     message: "user not found",

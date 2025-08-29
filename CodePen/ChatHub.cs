@@ -29,7 +29,10 @@ namespace CodePen
                 Message = message
             };
 
-            await Clients.User(receiverId).SendAsync("ReceiveMessage", Context.UserIdentifier, message);
+            await _privateChatService.CreatePrivateChatMessage(chatMessage);
+
+            await Clients.User(receiverId).SendAsync("ReceiveMessage", chatMessage);
+            await Clients.User(Context.UserIdentifier!).SendAsync("ReceiveMessage", chatMessage);
         }
 
     }
