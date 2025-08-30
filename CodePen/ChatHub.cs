@@ -34,6 +34,6 @@ namespace CodePen
             await Clients.User(receiverId).SendAsync("ReceiveMessage", chatMessage);
             await Clients.User(Context.UserIdentifier!).SendAsync("ReceiveMessage", chatMessage);
         }
-
+        
     }
 }

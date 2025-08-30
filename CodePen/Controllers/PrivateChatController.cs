@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Models.DTO;
 using Models.Entity;
 using Models.Exceptions;
 using Models.ResponseTypes;
@@ -40,6 +41,37 @@ namespace CodePen.Controllers
                 data:payload,
                 message:"messages fetched successfully",
                 statusCode:System.Net.HttpStatusCode.OK));
+        }
+
+        [HttpPost("create-message")]
+        [Authorize]
+        public async Task<IActionResult> CreatePrivateMessage(
+            [FromForm] CreatePrivateMessageDTO dto)
+        {
+            var user = await GetCurrentUserAsync();
+            var payload = await _privateChatService.CreatePrivateMessageWithMedia(dto , user);
+            
+            return Ok(ApiResponse<PrivateChatMessageEntity>.SuccessResponse(
+                data:payload,
+                message:"message created successfully",
+                statusCode:System.Net.HttpStatusCode.OK
+                ));
+        }
+
+        [HttpGet("get-message-media/{mediaId}")]
+        [Authorize]
+        public async Task<IActionResult> GetMessageMedia([FromRoute] long mediaId)
+        {
+            var user = await GetCurrentUserAsync();
+            var media = await _privateChatService.GetPrivateMessageMedia(mediaId);
+
+            if (media == null)
+                throw new AppException(
+                    message: "media not found",
+                    statusCode: System.Net.HttpStatusCode.NotFound,
+                    isOperational: true,
+                    errors: ["media not found"]);
+            return File(media.Data!, media.MimeType ?? "application/octet-stream", media.FileName);
         }
 
         //  helpers
